@@ -51,7 +51,7 @@ contract Bridge is NonblockingLzApp {
         bytes memory payload = abi.encode(
             msg.sender,
             amount,
-            l1Token,
+            l1Token
         );
 
         _lzSend(
@@ -111,7 +111,7 @@ contract Bridge is NonblockingLzApp {
             revert CantDecodeSymbol();
         }
 
-        try this.decodeUint8(tokenDecimals) returns (uint8 memory decimals) {
+        try this.decodeUint8(tokenDecimals) returns (uint8 decimals) {
             decodedDecimals = decimals;
         } catch {
             revert CantDecodeDecimal();
@@ -129,7 +129,7 @@ contract Bridge is NonblockingLzApp {
             address l1TokenAddress,
             string memory tokenName,
             string memory tokenSymbol,
-            uint8 memory tokenDecimals
+            uint8  tokenDecimals
         ) = abi.decode(
                 _payload,
                 (address, uint, address, string, string, uint8)
@@ -140,7 +140,7 @@ contract Bridge is NonblockingLzApp {
         if (l2Token == address(0)) {
             //DEPLOY
             BridgeERC20 _l2Token = new BridgeERC20(
-                owner,
+                owner(),
                 tokenName,
                 tokenSymbol,
                 tokenDecimals
@@ -149,9 +149,9 @@ contract Bridge is NonblockingLzApp {
             isBridgeToken[address(_l2Token)] = true; 
 
             //save new l2 token address
-            L1TokenVersionOnL2[tokenAddress] = address(_l2Token);
+            L1TokenVersionOnL2[l1TokenAddress] = address(_l2Token);
             //save l1 token to l2 token mapping 
-            L2TokenVersionOnL1[_l2Token] = l1TokenAddress;
+            L2TokenVersionOnL1[address(_l2Token)] = l1TokenAddress;
         }
 
         //after deploy, mint bridged amount to the user

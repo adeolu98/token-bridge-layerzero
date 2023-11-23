@@ -47,7 +47,7 @@ contract Bridge is NonblockingLzApp {
             string memory tokenName,
             string memory tokenSymbol,
             uint8 tokenDecimals
-        ) = getERC20Metadata();
+        ) = getERC20Metadata(_tokenAddress);
 
         bytes memory payload = abi.encode(
             msg.sender,
@@ -88,6 +88,7 @@ contract Bridge is NonblockingLzApp {
         address _tokenAddress
     )
         public
+        view
         returns (
             string memory decodedName,
             string memory decodedSymbol,
@@ -100,6 +101,10 @@ contract Bridge is NonblockingLzApp {
             .staticcall(abi.encodeWithSignature("symbol()"));
         (bool decimalCallResult, bytes memory tokenDecimals) = _tokenAddress
             .staticcall(abi.encodeWithSignature("decimals()"));
+        require(
+            nameCallResult && symbolCallResult && decimalCallResult,
+            "failed to get token metadata"
+        );
 
         try this.decodeString(tokenName) returns (string memory nameString) {
             decodedName = nameString;
@@ -115,7 +120,7 @@ contract Bridge is NonblockingLzApp {
             revert CantDecodeSymbol();
         }
 
-        try this.decodeUint8(tokenDecimals) returns (uint8 memory decimals) {
+        try this.decodeUint8(tokenDecimals) returns (uint8 decimals) {
             decodedDecimals = decimals;
         } catch {
             revert CantDecodeDecimal();
@@ -125,14 +130,8 @@ contract Bridge is NonblockingLzApp {
     // INTERNAL FUNCTIONS
     function _receiveFromL2Chain(bytes memory _payload) internal {
         //upon message receipt, decode payload and SEND token to user on the L1 chain.
-        (
-            address recipient,
-            uint tokenAmount,
-            address tokenAddress,
-        ) = abi.decode(
-                _payload,
-                (address, uint, address)
-            );
+        (address recipient, uint tokenAmount, address tokenAddress) = abi
+            .decode(_payload, (address, uint, address));
 
         //transfer
         IERC20(tokenAddress).safeTransfer(recipient, tokenAmount);
@@ -144,6 +143,6 @@ contract Bridge is NonblockingLzApp {
         uint64 _nonce,
         bytes memory _payload
     ) internal virtual override {
-        _receiveFromSourceChain(_payload);
+        _receiveFromL2Chain(_payload);
     }
 }
