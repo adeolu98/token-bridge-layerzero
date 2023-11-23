@@ -1,24 +1,27 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {Test, console2} from "forge-std/Test.sol";
-import {Counter} from "../src/Counter.sol";
+import {Test} from "forge-std/Test.sol";
+import {console} from "forge-std/console.sol";
+import {BridgeERC20} from "../src/BridgeERC20.sol";
+import { LibString } from 'solady/src/utils/LibString.sol';
 
 contract CounterTest is Test {
-    Counter public counter;
+    BridgeERC20 token;
+    using LibString for bytes;
 
     function setUp() public {
-        counter = new Counter();
-        counter.setNumber(0);
+        token = new BridgeERC20(msg.sender, "ade", "ade", 18);
     }
 
-    function test_Increment() public {
-        counter.increment();
-        assertEq(counter.number(), 1);
+    function testCheck() public {
+        (bool nameCallResult, bytes memory  tokenName) = address(token)
+            .staticcall(abi.encodeWithSignature("name()"));
+
+        console.logBytes(tokenName);
+        string memory toStr = tokenName.toHexStringNoPrefix();
+        console.log(toStr, "here");
     }
 
-    function testFuzz_SetNumber(uint256 x) public {
-        counter.setNumber(x);
-        assertEq(counter.number(), x);
-    }
+
 }
