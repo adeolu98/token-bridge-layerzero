@@ -5,8 +5,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-//import "../lib/StringBytes.sol";
-
+/// @title the l2bridge ERC20 token that is backed by tokens held in L1Bridge
+/// @author github:@adeolu98
+/// @notice token that represents the bridged l1 token on l2
 contract BridgeERC20 is ERC20, ERC20Burnable, Ownable {
     address public bridge;
     uint8 tokenDecimals;
@@ -29,16 +30,21 @@ contract BridgeERC20 is ERC20, ERC20Burnable, Ownable {
         _;
     }
 
+    /// @return token decimal amount
     function decimals() public view override returns (uint8) {
         return tokenDecimals;
     }
 
-    /// @dev callable by bridge and owner only
+    /// @dev callable by bridge and owner only, mints token
+    /// @param to address to mint token to
+    /// @param amount amount of tokens to mint
     function mint(address to, uint256 amount) public onlyOwnerOrBridge {
         _mint(to, amount);
     }
 
-    /// @dev callable by bridge and owner only
+    /// @dev callable by bridge and owner only, burns token
+    /// @param from address to burn token from
+    /// @param amount amount of tokens to burn
     function burn(address from, uint256 amount) public onlyOwnerOrBridge {
         _burn(from, amount);
     }
