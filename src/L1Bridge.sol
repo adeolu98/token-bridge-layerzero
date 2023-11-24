@@ -32,7 +32,7 @@ contract L1Bridge is NonblockingLzApp, ReentrancyGuard {
     /// @param _tokenAddress address of token to bridge.
     /// @param amount amount of tokens to send.
     /// @param _dstChainId destination chain id. layerzero ids are different from evm ids. check for your specific l2 id here ->  https://layerzero.gitbook.io/docs/technical-reference/mainnet/supported-chain-ids    uint16 layerzeroAVAXChainID = 106; // from the docs -> https://layerzero.gitbook.io/docs/technical-reference/mainnet/supported-chain-ids
-    /// @return payload, this is the data transferred across chains to the l2 bridge.
+    /// @return payload this is the data transferred across chains to the l2 bridge.
     function sendToL2Chain(
         address _tokenAddress,
         uint amount,
