@@ -7,6 +7,10 @@ import "./BridgeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
+/// @title L2 Bridge that allows for cross chain transfer of value
+/// @author github:@adeolu98
+/// @notice L2 Bridge contract that burns the l2 assets backed by l1 bridge value and
+/// communicates with l1 couterpart via layerzero to send l1 token asset to user
 contract L2Bridge is NonblockingLzApp, ReentrancyGuard {
     mapping(address => address) public L1TokenVersionOnL2;
     mapping(address => address) public L2TokenVersionOnL1;
@@ -32,12 +36,12 @@ contract L2Bridge is NonblockingLzApp, ReentrancyGuard {
         address _endpoint
     ) Ownable(msg.sender) NonblockingLzApp(_endpoint) {}
 
-/// @notice caller sends assets to l1 chain
-/// @dev burns token from user, sends message to l1 bridge via layerzero infra, l1 bridge sends asset to user 
-/// @param _tokenAddress address of token to bridge. 
-/// @param amount amount of tokens to  bridge. 
-/// @param _dstChainId destination chain id. layerzero ids are different from evm ids. check for your specific l2 id here ->  https://layerzero.gitbook.io/docs/technical-reference/mainnet/supported-chain-ids    uint16 layerzeroAVAXChainID = 106; // from the docs -> https://layerzero.gitbook.io/docs/technical-reference/mainnet/supported-chain-ids
-/// @return payload, this is the data transferred across chains to the l1 bridge. 
+    /// @notice caller sends assets to l1 chain
+    /// @dev burns token from user, sends message to l1 bridge via layerzero infra, l1 bridge sends asset to user
+    /// @param _tokenAddress address of token to bridge.
+    /// @param amount amount of tokens to  bridge.
+    /// @param _dstChainId destination chain id. layerzero ids are different from evm ids. check for your specific l2 id here ->  https://layerzero.gitbook.io/docs/technical-reference/mainnet/supported-chain-ids    uint16 layerzeroAVAXChainID = 106; // from the docs -> https://layerzero.gitbook.io/docs/technical-reference/mainnet/supported-chain-ids
+    /// @return payload, this is the data transferred across chains to the l1 bridge.
     function sendToL1Chain(
         address _l2tokenAddress,
         uint amount,
@@ -96,6 +100,12 @@ contract L2Bridge is NonblockingLzApp, ReentrancyGuard {
 
     // GETTER FUNCTION
 
+    /// @dev used to fetch the name, symbol and decimal of a token contract (metadata).
+    /// staticcall is used to ensure reverts on any state change. call will revert if bytes fails to be converted to string or uint8
+    /// @param _tokenAddress address of token to fetch its metadata
+    /// @return decodedName the string representation of the name which was in bytes
+    /// @return decodedSymbol the string representation of the symbol which was in bytes
+    /// @return decodedDecimals the uint8 representation of the  decimals which was in bytes
     function getERC20Metadata(
         address _tokenAddress
     )
@@ -135,6 +145,10 @@ contract L2Bridge is NonblockingLzApp, ReentrancyGuard {
     }
 
     // INTERNAL FUNCTIONS
+
+    /// @dev decodes the payload from the cross chain message and sends token to the user.
+    /// @param _payload the payload variable from the layerzero cross chain msg
+    ///make  fcn reentrant, trust no one, not even LZ.
     function _receiveFromL1Chain(bytes memory _payload) internal nonReentrant {
         //upon message receipt, decode payload and mint token to user on the l2 chain.
         //deploy a new token contract if necessary.
@@ -179,6 +193,7 @@ contract L2Bridge is NonblockingLzApp, ReentrancyGuard {
         emit ReceivedFromL1(_payload, l1TokenAddress, l2Token, tokenAmount);
     }
 
+    /// @dev lzApp functions that are called in the execution path of lzReceive()
     function _nonblockingLzReceive(
         uint16 _srcChainId,
         bytes memory _srcAddress,

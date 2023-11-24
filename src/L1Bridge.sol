@@ -9,7 +9,8 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title L1 Bridge that allows for cross chain transfer of value
 /// @author github:@adeolu98
-/// @notice L1 Bridge contract that holds l1 assets and communicates with l2 couterpart to mint l2 token backed by l1 asset to user
+/// @notice L1 Bridge contract that holds l1 assets and
+/// communicates with l2 couterpart to mint l2 token backed by l1 asset to user
 contract L1Bridge is NonblockingLzApp, ReentrancyGuard {
     mapping(address => address) L1TokenVersionOnL2;
 
@@ -105,7 +106,8 @@ contract L1Bridge is NonblockingLzApp, ReentrancyGuard {
 
     // GETTER FUNCTION
 
-    /// @dev used to fetch the name, symbol and decimal of a token contract (metadata). staticcall is used to ensure reverts on any state change
+    /// @dev used to fetch the name, symbol and decimal of a token contract (metadata).
+    /// staticcall is used to ensure reverts on any state change. call will revert if bytes fails to be converted to string or uint8
     /// @param _tokenAddress address of token to fetch its metadata
     /// @return decodedName the string representation of the name which was in bytes
     /// @return decodedSymbol the string representation of the symbol which was in bytes
@@ -169,7 +171,7 @@ contract L1Bridge is NonblockingLzApp, ReentrancyGuard {
         emit ReceivedFromL2(_payload, tokenAddress, tokenAmount);
     }
 
-/// @dev lzApp functions that are called in the execution path of lzReceive()
+    /// @dev lzApp functions that are called in the execution path of lzReceive()
     function _nonblockingLzReceive(
         uint16 _srcChainId,
         bytes memory _srcAddress,
