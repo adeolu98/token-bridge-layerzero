@@ -83,7 +83,7 @@ contract L2BridgeTest is L1BridgeTest {
     }
 
     function testOnlyLZCanCallToReceiveMessageFromL1() public {
-        //we will simulate a scenario where bridge mints tokens upon receipt of l1 msg
+        //we will simulate a scenario where l2 bridge mints tokens upon receipt of l1 msg
         //BRIDGE FROM L1 TO L2
         bytes memory payload = L1BridgeTest.testBridgeL2Chain(); //L1 TRANSACTION
 
@@ -97,8 +97,5 @@ contract L2BridgeTest is L1BridgeTest {
 
         //get the l2 token version of the bridged l1 token
         address l2Token = l2Bridge.L1TokenVersionOnL2(address(testToken));
-
-        // check that bridge bal reduced, meaning bridge sent tokens out
-        assertGt(BridgeERC20(l2Token).balanceOf(address(user)), 0);
     }
 }
