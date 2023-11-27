@@ -36,7 +36,10 @@ contract BridgeERC20Paused is ERC20, ERC20Burnable, Ownable {
         _;
     }
 
-    function transfer(address to, uint256 value) public isPaused override returns (bool) {
+    function transfer(
+        address to,
+        uint256 value
+    ) public override isPaused returns (bool) {
         return super.transfer(to, value);
     }
 

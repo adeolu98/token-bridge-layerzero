@@ -10,7 +10,7 @@ import {BridgeERC20Paused} from "../src/PauseableToken.sol";
 
 contract SetUpTest is Test {
     BridgeERC20 testToken;
-BridgeERC20Paused pauseableToken;
+    BridgeERC20Paused pauseableToken;
     L1Bridge l1Bridge;
     L2Bridge l2Bridge;
 
@@ -24,7 +24,12 @@ BridgeERC20Paused pauseableToken;
         testToken = new BridgeERC20(msg.sender, "test", "TST", 18);
         l1Bridge = new L1Bridge(lZEndPoint);
         l2Bridge = new L2Bridge(lZEndPoint);
-        pauseableToken = new BridgeERC20Paused(msg.sender, "pauseableToken", "TSTP", 18);
+        pauseableToken = new BridgeERC20Paused(
+            msg.sender,
+            "pauseableToken",
+            "TSTP",
+            18
+        );
 
         //set up the trustedRemote addresses
         l1Bridge.setTrustedRemote(
