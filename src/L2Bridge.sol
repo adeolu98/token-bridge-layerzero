@@ -42,6 +42,7 @@ contract L2Bridge is NonblockingLzApp, ReentrancyGuard {
     /// @param amount amount of tokens to  bridge.
     /// @param _dstChainId destination chain id. layerzero ids are different from evm ids. check for your specific l2 id here ->  https://layerzero.gitbook.io/docs/technical-reference/mainnet/supported-chain-ids    uint16 layerzeroAVAXChainID = 106; // from the docs -> https://layerzero.gitbook.io/docs/technical-reference/mainnet/supported-chain-ids
     /// @return payload this is the data transferred across chains to the l1 bridge.
+    // if send fails retry it using retryMessage()
     function sendToL1Chain(
         address _l2tokenAddress,
         uint amount,
@@ -149,6 +150,7 @@ contract L2Bridge is NonblockingLzApp, ReentrancyGuard {
     /// @dev decodes the payload from the cross chain message and sends token to the user.
     /// @param _payload the payload variable from the layerzero cross chain msg
     ///make  fcn reentrant, trust no one, not even LZ.
+    // if receive fails retry it using retryMessage()
     function _receiveFromL1Chain(bytes memory _payload) internal nonReentrant {
         //upon message receipt, decode payload and mint token to user on the l2 chain.
         //deploy a new token contract if necessary.

@@ -10,12 +10,15 @@ import "./SetUp.t.sol";
 
 contract L1BridgeTest is Test, SetUpTest {
     address user = makeAddr("userOne");
+    uint mintAmount = 100 * 1e18;
 
     function setUp() public override {
         super.setUp();
 
-        vm.prank(owner);
-        testToken.mint(user, 100 * 1e18);
+        vm.startPrank(owner);
+        testToken.mint(user, mintAmount);
+        pauseableToken.mint(user, mintAmount);
+        vm.stopPrank();
     }
 
     function testBridgeL2Chain() public returns (bytes memory payload) {
